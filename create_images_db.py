@@ -6,6 +6,7 @@ import numpy as np
 from tqdm import tqdm
 import os
 from utils.image_embedding import get_single_image_embeddings
+from utils.get_files_path import create_image_cache
 
 def get_files_path(folder_path):
   files_path = []
@@ -13,7 +14,7 @@ def get_files_path(folder_path):
     path_class_name = os.path.join(folder_path, class_name)
     for img_name in os.listdir(path_class_name):
       files_path.append(os.path.join(path_class_name, img_name))
-  
+
   return files_path
 
 def add_images_to_collection(collection: chromadb.Collection, files_path):
@@ -32,7 +33,7 @@ def add_images_to_collection(collection: chromadb.Collection, files_path):
   collection.add(ids=ids_path, embeddings=embeddings)
 
 
-db_path = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\database"
+db_path = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\database\database_image"
 image_loader = ImageLoader()
 client = chromadb.PersistentClient(path=db_path)
 embedding_function = OpenCLIPEmbeddingFunction()
@@ -41,7 +42,9 @@ collection = client.get_or_create_collection(
     embedding_function=embedding_function,
     data_loader=image_loader
 )
-ROOTS = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\data\train"
+ROOTS = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\data\data_image\train"
 files_path = get_files_path(ROOTS)
+
+create_image_cache(file_paths=files_path)
 
 add_images_to_collection(collection, files_path)

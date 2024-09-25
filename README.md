@@ -46,10 +46,10 @@ Open `create_images_db.py` and update the following variables:
 
 ```python
 # Path to your training dataset
-ROOTS = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\data\train"
+ROOTS = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\data\data_image\train"
 
 # Path to where the ChromaDB will be created/stored
-db_path = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\database"
+db_path = r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streamlit\database\database_image"
 
 
 ```
