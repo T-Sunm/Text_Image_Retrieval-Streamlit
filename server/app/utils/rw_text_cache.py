@@ -14,3 +14,8 @@ def get_text_cache(cache_file=r"D:\Asus\AIO\Project\Text_Image_Retrieval-Streaml
       corpus = json.load(f)
       print("Loaded corpus from cache.")
       return corpus
+
+
+def get_texts_by_ids(corpus, ids: list):
+  files_paths = [corpus[int(id.split('_')[1])] for id in ids]
+  return files_paths

@@ -1,0 +1,7 @@
+open-clip-torch
+chromadb==0.5.0
+pillow
+numpy
+tqdm
+fastapi
+uvicorn

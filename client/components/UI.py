@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-from utils.image_embedding import get_single_image_embeddings
+from server.create_db.images.preprocessing.image_embedding import get_single_image_embeddings
 import json
 from PIL import Image
 

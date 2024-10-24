@@ -14,7 +14,3 @@ def get_image_cache(cache_file=r"D:\Asus\AIO\Project\Text_Image_Retrieval-Stream
       file_paths = json.load(f)
       print("Loaded file paths from cache.")
       return file_paths
-
-def get_files_paths_by_ids(files_path, ids: list):
-  files_paths = [files_path[int(id.split('_')[1])] for id in ids]
-  return files_paths
