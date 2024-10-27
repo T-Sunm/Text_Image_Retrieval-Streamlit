@@ -5,3 +5,4 @@ numpy
 tqdm
 fastapi
 uvicorn
+python-multipart==0.0.12

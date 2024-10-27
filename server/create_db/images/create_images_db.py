@@ -38,7 +38,7 @@ def add_images_to_collection(collection: chromadb.Collection, files_path):
 def main():
   """Hàm chính thực hiện xử lý lưu ảnh vào ChromaDB."""
   # Đường dẫn database
-  db_path = r"../../database/database_image"
+  db_path = "../../database/database_image"
 
   # Kiểm tra xem database đã tồn tại chưa
   if os.path.exists(db_path):
@@ -52,13 +52,13 @@ def main():
 
   # Tạo collection nếu chưa tồn tại
   collection = client.get_or_create_collection(
-      name='multimodal_collection',
+      name='image_collection',
       embedding_function=embedding_function,
       data_loader=image_loader
   )
 
   # Đường dẫn đến thư mục chứa ảnh
-  ROOTS = r"../../data/data_image/train"
+  ROOTS = "../../data/data_image/train"
 
   # Lấy đường dẫn các file ảnh
   files_path = get_files_path(ROOTS)

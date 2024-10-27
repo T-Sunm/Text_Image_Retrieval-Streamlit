@@ -3,7 +3,6 @@ from PIL import Image
 import numpy as np
 from server.create_db.images.preprocessing.image_embedding import get_single_image_embeddings
 import json
-from PIL import Image
 
 
 def display_header(content: str):
