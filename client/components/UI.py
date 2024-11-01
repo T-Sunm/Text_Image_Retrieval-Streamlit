@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-from server.create_db.images.preprocessing.image_embedding import get_single_image_embeddings
+from utils.get_embeddings import get_single_image_embeddings
 import json
 
 
@@ -34,25 +34,33 @@ def search_input():
   if st.session_state.open_state == "search_text":
     st.session_state.query = st.text_input("Enter your search query:")
   elif st.session_state.open_state == "search_image":
-    query = st.file_uploader(
-        "Choose an image", type=['jpg', 'png', 'jpeg'])
+    query = st.file_uploader("Choose an image", type=[
+                             'jpg', 'png', 'jpeg'])
+
     if query is not None:  # Ensure a file is uploaded before processing
       image = Image.open(query)
-      query = np.array(image).astype(np.uint8)
-      st.session_state.query = get_single_image_embeddings(query)
-      st.image(image, caption='Uploaded Image.')
+      image_name = query.name  # Lấy tên của ảnh
+
+      # Lưu tên ảnh và embedding vào dictionary trong session_state.query
+      st.session_state.query = {
+          "image_name": image_name,
+          "image": image
+      }
+
+      # Display uploaded image and name
+      st.image(image, caption=f'Uploaded Image: {image_name}')
 
 
 def display_result(results, is_image=False, is_text=False):
-    #
-    # Giả sử bạn có 6 ảnh, và bạn muốn sắp xếp chúng vào 3 cột:
-    # Ảnh 1 (i=0): 0 % 3 = 0 (cột 1)
-    # Ảnh 2 (i=1): 1 % 3 = 1 (cột 2)
-    # Ảnh 3 (i=2): 2 % 3 = 2 (cột 3)
-    # Ảnh 4 (i=3): 3 % 3 = 0 (cột 1)
-    # Ảnh 5 (i=4): 4 % 3 = 1 (cột 2)
-    # Ảnh 6 (i=5): 5 % 3 = 2 (cột 3)
-    #
+  #
+  # Giả sử bạn có 6 ảnh, và bạn muốn sắp xếp chúng vào 3 cột:
+  # Ảnh 1 (i=0): 0 % 3 = 0 (cột 1)
+  # Ảnh 2 (i=1): 1 % 3 = 1 (cột 2)
+  # Ảnh 3 (i=2): 2 % 3 = 2 (cột 3)
+  # Ảnh 4 (i=3): 3 % 3 = 0 (cột 1)
+  # Ảnh 5 (i=4): 4 % 3 = 1 (cột 2)
+  # Ảnh 6 (i=5): 5 % 3 = 2 (cột 3)
+  #
 
   if results is not None:
     colors = ['orange', 'green', 'red', 'gray', 'blue']
@@ -138,8 +146,8 @@ def display_text_results_advance(texts_result):
                 """, unsafe_allow_html=True
       )
       # Căn giữa nút 'Choose' bằng cách đặt nó vào một `st.columns()` khác
-      button_col1, button_col2, button_col3, button_col4 = st.columns([
-                                                                      0.5, 0.5, 1, 0.5])
+      _, _, button_col3, _ = st.columns([
+          0.5, 0.5, 1, 0.5])
       with button_col3:  # Căn giữa nút 'Choose'
         if st.button("Choose", key=f"button_{i}"):
           st.session_state.selected_document = {
@@ -168,7 +176,3 @@ def display_text_results_advance(texts_result):
 
     else:
       st.write("Please select a document to view the content.")
-
-
-def display_search_button_retrievaltext():
-  pass

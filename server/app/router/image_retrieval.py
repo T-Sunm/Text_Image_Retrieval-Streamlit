@@ -8,7 +8,7 @@ async def retrieval_image(file_upload: UploadFile = File(...)):
     # Đọc file upload
     file_name = file_upload.filename
     file_content = await file_upload.read()
-
+    print(file_content)
     # Gọi hàm xử lý image_query
     results = image_query(file_content)
 

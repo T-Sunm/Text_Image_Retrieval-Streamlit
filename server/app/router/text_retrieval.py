@@ -4,9 +4,10 @@ text_retrival_router = APIRouter()
 
 @text_retrival_router.post("/retrieval_basic", status_code=status.HTTP_200_OK)
 async def retrieval_text_basic(query: str):
+  print(query)
   try:
     results = text_basic_query(query)
-
+    print()
     return results
 
   except Exception as e:

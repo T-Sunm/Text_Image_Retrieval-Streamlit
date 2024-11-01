@@ -57,11 +57,14 @@ def main():
       data_loader=image_loader
   )
 
-  # Đường dẫn đến thư mục chứa ảnh
-  ROOTS = "../../data/data_image/train"
+  # Lấy đường dẫn đến thư mục cha của dự án (thư mục gốc chứa database)
+  image_data_path = os.path.abspath(
+      os.path.join(os.path.dirname(__file__), "../../../data/data_image/train"))
+
+  print("Database Path:", image_data_path)
 
   # Lấy đường dẫn các file ảnh
-  files_path = get_files_path(ROOTS)
+  files_path = get_files_path(image_data_path)
 
   # Tạo cache cho ảnh
   create_image_cache(file_paths=files_path)

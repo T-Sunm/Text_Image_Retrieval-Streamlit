@@ -5,26 +5,29 @@ from chromadb.utils import embedding_functions
 import numpy as np
 from preprocessing.text_retrieval.create_corpus_q import create_corpus_queries
 from preprocessing.text_retrieval.text_embedding import get_single_text_embeddings
-from preprocessing.text_retrieval.rw_text_cache import create_text_cache
 import os
-
+import json
 
 def add_texts_to_collection(collection: chromadb.Collection, corpus: list, batch_size=40000):
   """Thêm văn bản và embeddings của chúng vào collection ChromaDB."""
   ids_path = []
   embeddings = []
-
+  answers = []
   for idx, text in tqdm(enumerate(corpus), total=len(corpus)):
     try:
       embedding_text = get_single_text_embeddings(text)
       ids_path.append(f"id_{idx}")
       embeddings.append(embedding_text.tolist())
 
+      # lưu thông tin
+      answers.append(json.dumps(text))
       # Kiểm tra nếu số lượng dữ liệu đã đạt đến batch_size
       if len(ids_path) >= batch_size:
-        collection.add(ids=ids_path, embeddings=embeddings)
+
+        collection.add(ids=ids_path, embeddings=embeddings, documents=answers)
         ids_path = []  # Reset lại danh sách sau khi thêm vào collection
         embeddings = []
+        answers = []
     except Exception as e:
       print(f"Error processing in corpus {idx}: {e}")
 
@@ -45,13 +48,16 @@ def main():
     print(f"Database already exists at {db_path}. Skipping creation.")
     return
   else:
-    print("chưa có dcmmm")
+    print("database not have")
 
   # Tạo client ChromaDB với đường dẫn lưu trữ
   client = chromadb.PersistentClient(path=db_path)
 
   # Tải dataset
-  ds = load_from_disk('../../data/ms_marco_v1.1')
+  # Lấy đường dẫn đến thư mục cha của dự án (thư mục gốc chứa database)
+  text_data_path = os.path.abspath(
+      os.path.join(os.path.dirname(__file__), "../../../data/ms_marco_v1.1"))
+  ds = load_from_disk(text_data_path)
   subset = ds['train'].to_list()
 
   # Tạo hàm nhúng văn bản
@@ -68,9 +74,6 @@ def main():
 
   # Tạo corpus và queries
   queries_infos, queries, corpus = create_corpus_queries(subset)
-
-  # Tạo cache cho văn bản
-  create_text_cache(corpus=corpus)
 
   # Thêm văn bản vào collection
   add_texts_to_collection(collection_text, corpus)
