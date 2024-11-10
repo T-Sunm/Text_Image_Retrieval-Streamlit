@@ -6,3 +6,5 @@ tqdm
 fastapi
 uvicorn
 python-multipart==0.0.12
+transformers==4.44.0
+nltk==3.8.1
