@@ -10,4 +10,4 @@ COPY . /src
 
 EXPOSE 5000
 
-CMD ["streamlit","run", "Image_Retrieval.py","--server.port=5000", "--server.address=0.0.0.0"]
+ENTRYPOINT ["streamlit","run", "Image_Retrieval.py","--server.port=5000", "--server.address=0.0.0.0"]
