@@ -1,9 +1,10 @@
-from fastapi import APIRouter, UploadFile, File, Form, status, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, status, HTTPException, Query
+
 from controller.text_retrieval import text_advanced_query, text_basic_query
 text_retrival_router = APIRouter()
 
 @text_retrival_router.post("/retrieval_basic", status_code=status.HTTP_200_OK)
-async def retrieval_text_basic(query: str):
+async def retrieval_text_basic(query: str = Query(...)):
   print(query)
   try:
     results = text_basic_query(query)
