@@ -7,7 +7,7 @@ async def retrieval_text_basic(query: str):
   print(query)
   try:
     results = text_basic_query(query)
-    print()
+
     return results
 
   except Exception as e:

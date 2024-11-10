@@ -16,23 +16,3 @@ def init_image_retrieval():
     st.session_state.last_state = None
 
   return (files_path)
-
-
-def init_text_retrieval():
-
-  corpus = get_text_cache()
-
-  # ------- init state
-  if 'query' not in st.session_state:
-    st.session_state.query = 0
-
-  return (corpus)
-
-
-def init_text_retrieval_advance():
-
-  # ------- init state
-  if 'query' not in st.session_state:
-    st.session_state.query = 0
-
-  pass

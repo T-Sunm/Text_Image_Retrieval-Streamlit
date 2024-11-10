@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-from utils.get_embeddings import get_single_image_embeddings
 import json
 
 
@@ -102,7 +101,7 @@ def display_result_text(results: list):
 
 def display_text_results_advance(texts_result):
   documents = []
-  for doc in texts_result['documents'][0]:
+  for doc in texts_result['documents']:
     document = json.loads(doc)
     formatted_doc = {
         "query_id": document['query_id'],
@@ -162,17 +161,19 @@ def display_text_results_advance(texts_result):
     st.markdown(
         f"""
     <div style="margin-bottom: 20px;">
-        <strong>Answer</strong> <span style="font-weight: normal;">{st.session_state.selected_document['title']}</span>
+        <strong>Answer</strong> <span style="font-weight: normal;">{st.session_state.selected_document.get('title', '')}</span>
     </div>
     """,
         unsafe_allow_html=True
     )
-    if "selected_document" in st.session_state and isinstance(st.session_state.selected_document, dict):
+    
+    relevant_docs = st.session_state.selected_document.get(
+        'document_relevant', [])
+    if relevant_docs:
       with st.container(height=600):
-        for i, doc in enumerate(st.session_state.selected_document['document_relevant']):
+        for i, doc in enumerate(relevant_docs):
           st.markdown(f"#### **Relevant document {i + 1}**")
           st.write(doc)
           st.markdown("---")
-
     else:
       st.write("Please select a document to view the content.")
