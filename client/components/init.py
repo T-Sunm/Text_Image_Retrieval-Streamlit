@@ -1,11 +1,7 @@
 import streamlit as st
-import chromadb
-from chromadb.utils.embedding_functions import OpenCLIPEmbeddingFunction
-from chromadb.utils.data_loaders import ImageLoader
 from utils.resetquery import reset_query
-from utils.get_data_in_caches import get_image_cache
-from utils.get_data_in_caches import get_text_cache
-from chromadb.utils import embedding_functions
+from utils.rw_image_cache import get_image_cache
+
 def init_image_retrieval():
 
   files_path = get_image_cache()

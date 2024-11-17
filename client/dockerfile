@@ -8,6 +8,6 @@ RUN pip install --no-cache-dir --upgrade -r /src/requirements.txt
 
 COPY . /src
 
-EXPOSE 5000
+EXPOSE 8501
 
-ENTRYPOINT ["streamlit","run", "Image_Retrieval.py","--server.port=5000", "--server.address=0.0.0.0"]
+ENTRYPOINT ["streamlit","run", "Image_Retrieval.py","--server.port=8501", "--server.address=0.0.0.0"]

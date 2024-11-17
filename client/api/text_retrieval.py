@@ -2,7 +2,7 @@ import os
 import requests
 import io
 from utils.preprocessing.decoding_text import decode_escaped_strings
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
 
 def text_to_text_basics(text: str):
 

@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./server
+    container_name: backend_retrieval
+    volumes:
+      - database_retrieval:/database
+    networks:
+      - retrival_net
+    ports:
+      - 8000:8000
+    entrypoint: ["python", "app/app.py"]
+
+  frontend:
+    build:
+      context: ./client
+    container_name: frontend_retrieval
+    networks:
+      - retrival_net
+    ports:
+      - 8501:8501
+    entrypoint: ["streamlit", "run", "Image_Retrieval.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+networks:
+  retrival_net:
+    driver: bridge
+
+volumes:
+  database_retrieval:

@@ -53,10 +53,9 @@ def main():
   # Tạo client ChromaDB với đường dẫn lưu trữ
   client = chromadb.PersistentClient(path=db_path)
 
-  # Tải dataset
   # Lấy đường dẫn đến thư mục cha của dự án (thư mục gốc chứa database)
   text_data_path = os.path.abspath(
-      os.path.join(os.path.dirname(__file__), "../../../data/ms_marco_v1.1"))
+      os.path.join(os.path.dirname(__file__), "../../../client/data/ms_marco_v1.1"))
   ds = load_from_disk(text_data_path)
   subset = ds['train'].to_list()
 

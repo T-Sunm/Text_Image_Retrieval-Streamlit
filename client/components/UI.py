@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import json
-
+import os
 
 def display_header(content: str):
   st.markdown(f'''
@@ -50,7 +50,7 @@ def search_input():
       st.image(image, caption=f'Uploaded Image: {image_name}')
 
 
-def display_result(results, is_image=False, is_text=False):
+def display_result(results, is_image=False,):
   #
   # Giả sử bạn có 6 ảnh, và bạn muốn sắp xếp chúng vào 3 cột:
   # Ảnh 1 (i=0): 0 % 3 = 0 (cột 1)
@@ -68,15 +68,19 @@ def display_result(results, is_image=False, is_text=False):
 
     for i, res in enumerate(results):
       col = result_cols[i % 3]
+
+      # Hiển thị nhãn
       col.markdown(f"""
-      <span style="color:white;background-color:{colors[i]};padding:5px;border-radius:5px;">Rank {i + 1}</span>
-      """, unsafe_allow_html=True)
-      if is_image == True:
-        col.image(res, use_column_width=True)
+        <span style="color:white;background-color:{colors[i]};padding:5px;border-radius:5px;">Rank {i + 1}</span>
+        """, unsafe_allow_html=True)
 
-      if is_text == True:
-        col.write(res)
+      # Hiển thị hình ảnh trong cùng cột
+      if is_image:
+        fixed_path = res.replace("\\", "/")
+        absolute_path = os.path.abspath(fixed_path)
+        col.image(absolute_path, use_column_width=True)
 
+      # Divider trong cùng cột
       col.divider()
 
 
@@ -166,7 +170,7 @@ def display_text_results_advance(texts_result):
     """,
         unsafe_allow_html=True
     )
-    
+
     relevant_docs = st.session_state.selected_document.get(
         'document_relevant', [])
     if relevant_docs:

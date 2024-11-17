@@ -1,7 +1,7 @@
 import os
 import requests
 import io
-BACKEND_URL = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
 
 
 def image_to_image(image, image_name):
@@ -26,6 +26,7 @@ def image_to_image(image, image_name):
     ids = json_results.get("ids", [])
     distances = json_results.get("distances", [])
 
+    print(json_results)
     return {"ids": ids, "distances": distances}
   else:
     return "Error: API request failed.", None

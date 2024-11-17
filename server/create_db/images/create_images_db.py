@@ -10,13 +10,29 @@ from preprocessing.rw_image_cache import create_image_cache
 
 
 def get_files_path(folder_path):
-  """Lấy tất cả đường dẫn file ảnh từ thư mục gốc."""
-  files_path = []
+
+  # Xác định đường dẫn tuyệt đối đến thư mục 'client'
+  client_root_path = os.path.abspath(os.path.join(
+      os.path.dirname(__file__), "../../../client"))
+
+  """Lấy tất cả đường dẫn file ảnh từ thư mục gốc và trả về cả đường dẫn tuyệt đối và tương đối."""
+  absolute_paths = []
+  relative_paths = []
+
   for class_name in os.listdir(folder_path):
     path_class_name = os.path.join(folder_path, class_name)
     for img_name in os.listdir(path_class_name):
-      files_path.append(os.path.join(path_class_name, img_name))
-  return files_path
+      # Tạo đường dẫn tuyệt đối và chuẩn hóa
+      absolute_path = os.path.normpath(
+          os.path.join(path_class_name, img_name))
+      absolute_paths.append(absolute_path)
+
+      # Tạo đường dẫn tương đối bắt đầu từ client_root_path và chuẩn hóa
+      relative_path = os.path.normpath(
+          os.path.relpath(absolute_path, start=client_root_path))
+      relative_paths.append(relative_path)
+
+  return absolute_paths, relative_paths
 
 
 def add_images_to_collection(collection: chromadb.Collection, files_path):
@@ -59,18 +75,18 @@ def main():
 
   # Lấy đường dẫn đến thư mục cha của dự án (thư mục gốc chứa database)
   image_data_path = os.path.abspath(
-      os.path.join(os.path.dirname(__file__), "../../../data/data_image/train"))
+      os.path.join(os.path.dirname(__file__), "../../../client/data/data_image/train"))
 
   print("Database Path:", image_data_path)
 
   # Lấy đường dẫn các file ảnh
-  files_path = get_files_path(image_data_path)
+  absolute_paths, relative_paths = get_files_path(image_data_path)
 
   # Tạo cache cho ảnh
-  create_image_cache(file_paths=files_path)
+  create_image_cache(file_paths=relative_paths)
 
   # Thêm ảnh và embeddings vào collection
-  add_images_to_collection(collection, files_path)
+  add_images_to_collection(collection, absolute_paths)
   print("Images and embeddings have been successfully added to the collection.")
 
 

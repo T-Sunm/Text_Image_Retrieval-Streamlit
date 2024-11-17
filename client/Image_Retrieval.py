@@ -2,7 +2,7 @@ import streamlit as st
 from utils.resetquery import reset_query
 from components.init import init_image_retrieval
 from components.UI import display_header, display_search_button, display_result, search_input
-from utils.get_data_in_caches import get_files_paths_by_ids
+from utils.rw_image_cache import get_files_paths_by_ids
 from api.image_retrieval import image_to_image
 # Cấu hình trang với tiêu đề tùy chỉnh
 st.set_page_config(page_title="Main Page Title", page_icon=":rocket:")
