@@ -4,6 +4,7 @@ from chromadb.utils.embedding_functions import OpenCLIPEmbeddingFunction
 from chromadb.utils.data_loaders import ImageLoader
 from chromadb.utils import embedding_functions
 import os
+
 def init_image_retrieval():
   # Đường dẫn đến thư mục chứa file Python hiện tại
   project_root = os.path.abspath(
@@ -60,6 +61,39 @@ def init_text_retrieval_advance():
     )
     print("Advanced text retrieval model initialized successfully!")
     return collection_text_advance
+  except Exception as e:
+    print(f"Failed to initialize advanced text retrieval model: {e}")
+    return None
+
+def init_text_retrieval_img():
+  project_root = os.path.abspath(
+      os.path.join(os.path.dirname(__file__), "..", ".."))
+  db_path = os.path.join(project_root, "database", "database_multimodal")
+  try:
+    client = chromadb.PersistentClient(path=db_path)
+    collection_text_to_image = client.get_or_create_collection(
+        name='text_to_image_collection',
+        metadata={"hnsw:space": "cosine"}
+    )
+    print("Text retrieval image model initialized successfully!")
+    return collection_text_to_image
+  except Exception as e:
+    print(f"Failed to initialize advanced text retrieval model: {e}")
+    return None
+
+
+def init_img_retrieval_text():
+  project_root = os.path.abspath(
+      os.path.join(os.path.dirname(__file__), "..", ".."))
+  db_path = os.path.join(project_root, "database", "database_multimodal")
+  try:
+    client = chromadb.PersistentClient(path=db_path)
+    collection_image_to_text = client.get_or_create_collection(
+        name='image_to_text_collection',
+        metadata={"hnsw:space": "cosine"}
+    )
+    print("Text retrieval image model initialized successfully!")
+    return collection_image_to_text
   except Exception as e:
     print(f"Failed to initialize advanced text retrieval model: {e}")
     return None
