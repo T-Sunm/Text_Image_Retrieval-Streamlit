@@ -26,7 +26,6 @@ def image_to_image(image, image_name):
     ids = json_results.get("ids", [])
     distances = json_results.get("distances", [])
 
-    print(json_results)
     return {"ids": ids, "distances": distances}
   else:
     return "Error: API request failed.", None

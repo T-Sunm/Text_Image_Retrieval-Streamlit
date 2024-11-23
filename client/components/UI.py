@@ -36,7 +36,7 @@ def search_input():
     query = st.file_uploader("Choose an image", type=[
                              'jpg', 'png', 'jpeg'])
 
-    if query is not None:  # Ensure a file is uploaded before processing
+    if query is not None:
       image = Image.open(query)
       image_name = query.name  # Lấy tên của ảnh
 
@@ -50,7 +50,21 @@ def search_input():
       st.image(image, caption=f'Uploaded Image: {image_name}')
 
 
-def display_result(results, is_image=False,):
+def display_result(results, is_image=False, captions=None):
+  """
+    Hiển thị một hình ảnh trong giao diện Streamlit.
+
+    Các bước thực hiện:
+    1. Chuyển đổi dấu phân cách trong đường dẫn từ '\\' (Windows) sang '/' để chuẩn hóa đường dẫn.
+    2. Chuyển đường dẫn thành đường dẫn tuyệt đối để đảm bảo chính xác vị trí của tệp.
+    3. Sử dụng `col.image` trong Streamlit để hiển thị ảnh với chiều rộng tự động phù hợp với cột giao diện.
+
+    Args:
+        res (str): Đường dẫn tới tệp ảnh,là đường dẫn tương đối bắt đầu = data\\....
+
+    Returns:
+        None
+  """
   #
   # Giả sử bạn có 6 ảnh, và bạn muốn sắp xếp chúng vào 3 cột:
   # Ảnh 1 (i=0): 0 % 3 = 0 (cột 1)
@@ -68,17 +82,30 @@ def display_result(results, is_image=False,):
 
     for i, res in enumerate(results):
       col = result_cols[i % 3]
-
-      # Hiển thị nhãn
       col.markdown(f"""
-        <span style="color:white;background-color:{colors[i]};padding:5px;border-radius:5px;">Rank {i + 1}</span>
+          <span style="color:white;background-color:{colors[i]};padding:5px;border-radius:5px;">Rank {i + 1}</span>
+          """, unsafe_allow_html=True)
+      if is_image == False:
+        # Hiển thị nhãn
+        col.markdown(f"""
+              <div style="
+                  display: inline-block;
+                  background-color: #f0f0f0;
+                  padding: 10px 15px;
+                  border-radius: 10px;
+                  margin-top: 5px;
+                  font-size: 13px;
+                  font-family: Arial, sans-serif;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                  color: #333;
+              ">
+                  {captions[i]['caption']}
+              </div>
         """, unsafe_allow_html=True)
 
-      # Hiển thị hình ảnh trong cùng cột
-      if is_image:
-        fixed_path = res.replace("\\", "/")
-        absolute_path = os.path.abspath(fixed_path)
-        col.image(absolute_path, use_column_width=True)
+      fixed_path = res.replace("\\", "/")
+      absolute_path = os.path.abspath(fixed_path)
+      col.image(absolute_path, use_column_width=True)
 
       # Divider trong cùng cột
       col.divider()
@@ -91,7 +118,6 @@ def display_result_text(results: list):
     # Tạo một container có chiều cao cố định
     with st.container(height=600):
       for i, res in enumerate(results):
-        print(res)
         st.markdown(f"""
                 <div style="margin-bottom: 20px;">
                     <span class="result-rank" style="background-color:{colors[i % len(colors)]}; padding: 5px 10px; padding-horizontal: 10px; border-radius: 5px; margin-bottom:5px; display: inline-block;">
