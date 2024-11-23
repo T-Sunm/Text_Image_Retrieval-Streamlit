@@ -82,23 +82,26 @@ def display_result(results, is_image=False, captions=None):
 
     for i, res in enumerate(results):
       col = result_cols[i % 3]
-
-      # Hiển thị nhãn
       col.markdown(f"""
-        <div style="
-            display: inline-block;
-            background-color: #f0f0f0;
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-top: 5px;
-            font-size: 13px;
-            font-family: Arial, sans-serif;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            color: #333;
-        ">
-            {captions[i]['caption']}
-        </div>
-    """, unsafe_allow_html=True)
+          <span style="color:white;background-color:{colors[i]};padding:5px;border-radius:5px;">Rank {i + 1}</span>
+          """, unsafe_allow_html=True)
+      if is_image == False:
+        # Hiển thị nhãn
+        col.markdown(f"""
+              <div style="
+                  display: inline-block;
+                  background-color: #f0f0f0;
+                  padding: 10px 15px;
+                  border-radius: 10px;
+                  margin-top: 5px;
+                  font-size: 13px;
+                  font-family: Arial, sans-serif;
+                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                  color: #333;
+              ">
+                  {captions[i]['caption']}
+              </div>
+        """, unsafe_allow_html=True)
 
       fixed_path = res.replace("\\", "/")
       absolute_path = os.path.abspath(fixed_path)
@@ -115,7 +118,6 @@ def display_result_text(results: list):
     # Tạo một container có chiều cao cố định
     with st.container(height=600):
       for i, res in enumerate(results):
-        print(res)
         st.markdown(f"""
                 <div style="margin-bottom: 20px;">
                     <span class="result-rank" style="background-color:{colors[i % len(colors)]}; padding: 5px 10px; padding-horizontal: 10px; border-radius: 5px; margin-bottom:5px; display: inline-block;">

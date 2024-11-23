@@ -164,4 +164,4 @@ cython_debug/
 # folder
 database/
 data/
-file_paths_cache.json
+client/caches/

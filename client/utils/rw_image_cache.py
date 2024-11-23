@@ -25,7 +25,6 @@ def get_multimodal_db(cache_file="../caches/multimodal_db.csv"):
     return data
 
 def get_files_paths_by_ids(files_path, ids):
-  print(ids)
   results = []
   for id in ids:
     index = int(id.split("_")[1])

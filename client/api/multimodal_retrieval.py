@@ -1,7 +1,7 @@
 import os
 import requests
 import io
-BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
 
 
 def text_to_image(text):
