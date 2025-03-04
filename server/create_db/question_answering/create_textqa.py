@@ -63,6 +63,9 @@ def main():
       metadata={"hnsw:space": "cosine"}
   )
 
+  add_texts_to_collection(collection_text, raw_datasets['train'])
+  add_texts_to_collection(collection_text, raw_datasets['validation'])
+
 
 if __name__ == "__main__":
   main()

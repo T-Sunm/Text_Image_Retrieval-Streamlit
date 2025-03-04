@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np
 import json
 import os
-
+from api.text_retrieval import text_to_text_basics, text_to_text_advanced
 def display_header(content: str):
   st.markdown(f'''
         <div style="text-align: center;">
@@ -205,5 +205,143 @@ def display_text_results_advance(texts_result):
           st.markdown(f"#### **Relevant document {i + 1}**")
           st.write(doc)
           st.markdown("---")
+    else:
+      st.write("Please select a document to view the content.")
+
+
+def display_UI_EQA_basic():
+
+  # 2. Ô nhập văn bản cho Context
+  context_text = st.text_area("Context",
+                              value="The Amazon rainforest is also known in English as the Amazon Jungle.",
+                              height=200)
+
+  if st.button('SUBMIT'):
+    if st.session_state.query.strip():
+      st.session_state.results = text_to_text_basics(
+          st.session_state.query)
+    # # 4. Nút 'Submit' để lấy kết quả
+    # if st.button("Get Answer"):
+    #   if context_text.strip() and question_text.strip():
+    #     # Gọi pipeline để thực hiện suy luận
+    #     result = qa_pipeline({
+    #         'context': context_text,
+    #         'question': question_text
+    #     })
+
+    #     # Lấy câu trả lời và điểm số
+    #     answer = result['answer']
+    #     score = result['score']
+
+    #     # Hiển thị kết quả
+    #     st.markdown(f"**Answer:** {answer}")
+    #     st.markdown(f"**Score:** {score}")
+    #   else:
+    #     st.warning("Please provide both Context and Question.")
+
+
+def display_UI_EQA_advanced(results_qa):
+  # Chuyển data_list (list dict) thành danh sách documents định dạng UI mong muốn
+  documents = []
+  for i, item in enumerate(results_qa):
+    formatted_doc = {
+        "query_id": i,  # Sử dụng index làm query_id nếu không có field riêng
+        "title": item.get("answer", ""),
+        "content": item.get("context", ""),
+        "question": item.get("question", ""),
+        "score_answer": item.get("score_answer", 0.0),
+        "score_similarity_question": item.get("score_similarity_question", 0.0),
+        "location": item.get('location', {})
+    }
+    documents.append(formatted_doc)
+  colors = ['orange', 'green', 'red', 'gray', 'blue']
+
+  # Tạo layout: cột bên trái (3) hiển thị danh sách document, cột bên phải (5) hiển thị chi tiết document được chọn
+  col1, col2 = st.columns([3, 5])
+
+  with col1:
+    for i, doc in enumerate(documents):
+      # Hiển thị Rank và Title của từng document với style tùy chỉnh
+      st.markdown(
+          f"""
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="
+                        display: inline-block;
+                        padding: 3px 8px;
+                        border-radius: 12px;
+                        font-size: 12px;
+                        color: white;
+                        background-color: {colors[i % len(colors)]};
+                        vertical-align: middle;">Rank {i + 1}
+                    </span>
+                    <div style="
+                        display: inline-block;
+                        padding: 10px;
+                        width: 200px;
+                        border: 1px solid black;
+                        border-radius: 5px;
+                        text-align: center;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;">{doc['title']}
+                    </div>
+                </div>
+                """, unsafe_allow_html=True
+      )
+      # Tạo nút 'Choose' căn giữa bằng cách chia cột nhỏ
+      _, _, button_col, _ = st.columns([0.5, 0.5, 1, 0.5])
+      with button_col:
+        if st.button("Choose", key=f"button_{i}"):
+          st.session_state.selected_document = {
+              "id": i,
+              "title": doc["title"],
+              "content": doc["content"],
+              "question": doc["question"],
+              "score_answer": doc["score_answer"],
+              "score_similarity_question": doc["score_similarity_question"],
+              "location": doc["location"]
+          }
+      # Ngăn cách giữa các document
+      st.markdown('<hr style="margin: 5px 0;">', unsafe_allow_html=True)
+
+  with col2:
+    selected_doc = st.session_state.get("selected_document", None)
+    if selected_doc:
+      # Hiển thị tiêu đề (Answer) của document được chọn
+      st.markdown(
+          f"""
+                <div style="margin-bottom: 20px;">
+                    <strong>Answer:</strong> <span style="font-weight: normal;">{selected_doc.get('title', '')}</span>
+                </div>
+                """, unsafe_allow_html=True
+      )
+      # Hiển thị câu hỏi gốc và các điểm số
+      st.markdown(f"**Question:** {selected_doc.get('question', '')}")
+      st.markdown(
+          f"**Score Answer:** {selected_doc.get('score_answer', 0.0)}")
+      st.markdown(
+          f"**Score Similarity:** {selected_doc.get('score_similarity_question', 0.0)}")
+      st.markdown("### Context")
+
+      context_text = selected_doc.get('content', '')
+      location = selected_doc.get('location', None)
+
+      if "start" in location and "end" in location:
+        start = location["start"]
+        end = location["end"]
+        # Kiểm tra điều kiện để tránh lỗi nếu location vượt quá độ dài context
+        if 0 <= start < end <= len(context_text):
+          prefix = context_text[:start]
+          highlight = context_text[start:end]
+          suffix = context_text[end:]
+          # Tô màu nền cho đoạn được highlight (có thể tùy chỉnh màu sắc)
+          formatted_context = f"{prefix}<span style='background-color: {colors[selected_doc['id'] % len(colors)]};'>{highlight}</span>{suffix}"
+        else:
+          formatted_context = context_text
+      else:
+        formatted_context = context_text
+
+      st.markdown(formatted_context, unsafe_allow_html=True)
+
     else:
       st.write("Please select a document to view the content.")

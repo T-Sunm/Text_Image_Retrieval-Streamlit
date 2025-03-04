@@ -4,7 +4,7 @@ import io
 from utils.preprocessing.decoding_text import decode_escaped_strings
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
-def text_to_text_basics(text: str):
+def extract_qa_basics(text: str):
 
   url = f"{BACKEND_URL}/text/retrieval_basic"
   params = {"query": text}
@@ -25,8 +25,10 @@ def text_to_text_basics(text: str):
   else:
     return "Error: API request failed.", None
 
-def text_to_text_advanced(text: str):
-  url = f"{BACKEND_URL}/text/retrieval_advanced"
+
+def extract_qa_advanced(text: str):
+
+  url = f"{BACKEND_URL}/eqa/extract_question_answering"
   params = {"query": text}
   headers = {'accept': 'application/json'}
   response = requests.post(url, headers=headers, params=params, timeout=10)
@@ -34,11 +36,7 @@ def text_to_text_advanced(text: str):
   if response.status_code == 200:
     # Lấy JSON từ phản hồi
     json_results = response.json()
-
-    # Truy cập vào các trường `ids` và `distances`
-    ids = json_results.get("ids", [])
-    distances = json_results.get("distances", [])
-    documents = json_results.get("documents", [])
-    return {"ids": ids, "distances": distances, "documents": documents[0]}
+  # Trả về list các dict
+    return json_results
   else:
-    return "Error: API request failed.", None
+    return f"Error: status_code = {response.status_code}", None
