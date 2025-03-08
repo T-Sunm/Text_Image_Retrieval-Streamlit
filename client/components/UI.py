@@ -3,7 +3,6 @@ from PIL import Image
 import numpy as np
 import json
 import os
-from api.text_retrieval import text_to_text_basics, text_to_text_advanced
 def display_header(content: str):
   st.markdown(f'''
         <div style="text-align: center;">
@@ -48,6 +47,24 @@ def search_input():
 
       # Display uploaded image and name
       st.image(image, caption=f'Uploaded Image: {image_name}')
+
+def highlight_answer(context: str, location, color) -> str:
+  if "start" in location and "end" in location:
+    start = location["start"]
+    end = location["end"]
+    # Kiểm tra điều kiện để tránh lỗi nếu location vượt quá độ dài context
+    if 0 <= start < end <= len(context):
+      prefix = context[:start]
+      highlight = context[start:end]
+      suffix = context[end:]
+      # Tô màu nền cho đoạn được highlight (có thể tùy chỉnh màu sắc)
+      formatted_context = f"{prefix}<span style='background-color: {color};'>{highlight}</span>{suffix}"
+    else:
+      formatted_context = context
+  else:
+    formatted_context = context
+
+  st.markdown(formatted_context, unsafe_allow_html=True)
 
 
 def display_result(results, is_image=False, captions=None):
@@ -209,36 +226,48 @@ def display_text_results_advance(texts_result):
       st.write("Please select a document to view the content.")
 
 
-def display_UI_EQA_basic():
+def display_UI_EQA_basic(question_answering_func):
+  st.write(
+      "Paste your text in the context field and type a question to get an answer from the text!")
 
-  # 2. Ô nhập văn bản cho Context
-  context_text = st.text_area("Context",
-                              value="The Amazon rainforest is also known in English as the Amazon Jungle.",
-                              height=200)
+  with st.container():
+    # Ô nhập context
+    context_text = st.text_area(
+        label="Context",
+        placeholder="Paste your context here...",
+        value="The Amazon rainforest is also known in English as the Amazon Jungle.",
+        height=150
+    )
 
-  if st.button('SUBMIT'):
-    if st.session_state.query.strip():
-      st.session_state.results = text_to_text_basics(
-          st.session_state.query)
-    # # 4. Nút 'Submit' để lấy kết quả
-    # if st.button("Get Answer"):
-    #   if context_text.strip() and question_text.strip():
-    #     # Gọi pipeline để thực hiện suy luận
-    #     result = qa_pipeline({
-    #         'context': context_text,
-    #         'question': question_text
-    #     })
+    # Nút xử lý
+    if st.button("Get Answer"):
+      # Xử lý loading spinner
+      with st.spinner("Thinking..."):
+        if st.session_state.query.strip():
+          # Gọi hàm QA logic
+          result = question_answering_func(
+              st.session_state.query, context_text)
+          st.session_state.qa_result = result
+        else:
+          st.warning("Please enter a question before submitting.")
 
-    #     # Lấy câu trả lời và điểm số
-    #     answer = result['answer']
-    #     score = result['score']
+  if "qa_result" in st.session_state and st.session_state.qa_result is not None:
+    result = st.session_state.qa_result
+    with st.container():
+      st.subheader("Output")
+      # Lấy các thông tin quan trọng
+      answer = result.get("answer", "")
+      score = result.get("score_answer", 0.0)
+      location = result.get("location", {})
 
-    #     # Hiển thị kết quả
-    #     st.markdown(f"**Answer:** {answer}")
-    #     st.markdown(f"**Score:** {score}")
-    #   else:
-    #     st.warning("Please provide both Context and Question.")
+      # Hiển thị answer
+      st.write(f"**Answer**: {answer}")
+      st.write(f"**Confidence score**: {score:.3f}")
 
+      # Gọi hàm highlight_answer để highlight câu trả lời trong context
+      highlight_answer(context_text, location, "orange")
+      with st.expander("See raw result JSON"):
+          st.json(result)
 
 def display_UI_EQA_advanced(results_qa):
   # Chuyển data_list (list dict) thành danh sách documents định dạng UI mong muốn
@@ -325,23 +354,8 @@ def display_UI_EQA_advanced(results_qa):
 
       context_text = selected_doc.get('content', '')
       location = selected_doc.get('location', None)
-
-      if "start" in location and "end" in location:
-        start = location["start"]
-        end = location["end"]
-        # Kiểm tra điều kiện để tránh lỗi nếu location vượt quá độ dài context
-        if 0 <= start < end <= len(context_text):
-          prefix = context_text[:start]
-          highlight = context_text[start:end]
-          suffix = context_text[end:]
-          # Tô màu nền cho đoạn được highlight (có thể tùy chỉnh màu sắc)
-          formatted_context = f"{prefix}<span style='background-color: {colors[selected_doc['id'] % len(colors)]};'>{highlight}</span>{suffix}"
-        else:
-          formatted_context = context_text
-      else:
-        formatted_context = context_text
-
-      st.markdown(formatted_context, unsafe_allow_html=True)
+      highlight_answer(context_text, location,
+                       colors[selected_doc['id'] % len(colors)])
 
     else:
       st.write("Please select a document to view the content.")

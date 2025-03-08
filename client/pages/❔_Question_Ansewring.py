@@ -16,7 +16,10 @@ def main():
   st.divider()
 
   # 3) Input cho query
-  st.session_state.query = st.text_input("Enter your search query:")
+  st.session_state.query = st.text_input(
+      label="Question",
+      placeholder="Enter your question here..."
+  )
 
   # 4) Bố trí nút BASIC và ADVANCE
   _, col2, _ = st.columns([1, 22, 1])
@@ -34,7 +37,7 @@ def main():
             st.session_state.query)
 
   if st.session_state.open_state == 'search_text_basic':
-    display_UI_EQA_basic()
+    display_UI_EQA_basic(extract_qa_basics)
   elif st.session_state.open_state == 'search_text_advance':
     display_UI_EQA_advanced(st.session_state.results)
   else:

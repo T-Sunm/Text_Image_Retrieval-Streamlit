@@ -4,10 +4,10 @@ import io
 from utils.preprocessing.decoding_text import decode_escaped_strings
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
-def extract_qa_basics(text: str):
+def extract_qa_basics(query: str, context: str):
 
-  url = f"{BACKEND_URL}/text/retrieval_basic"
-  params = {"query": text}
+  url = f"{BACKEND_URL}/eqa/question_answering"
+  params = {"query": query, "context": context}
   headers = {'accept': 'application/json'}
   response = requests.post(url, headers=headers, params=params, timeout=10)
 
@@ -15,20 +15,14 @@ def extract_qa_basics(text: str):
     # Lấy JSON từ phản hồi
     json_results = response.json()
 
-    # Truy cập vào các trường `ids` và `distances`
-    ids = json_results.get("ids", [])
-    distances = json_results.get("distances", [])
-    documents = json_results.get("documents", [])
-
-    decoded_documents = decode_escaped_strings(documents[0])
-    return {"ids": ids, "distances": distances, "documents": decoded_documents}
+    return json_results
   else:
-    return "Error: API request failed.", None
+    return f"Error: status_code = {response.status_code}", None
 
 
 def extract_qa_advanced(text: str):
 
-  url = f"{BACKEND_URL}/eqa/extract_question_answering"
+  url = f"{BACKEND_URL}/eqa/e2e_question_answering"
   params = {"query": text}
   headers = {'accept': 'application/json'}
   response = requests.post(url, headers=headers, params=params, timeout=10)
