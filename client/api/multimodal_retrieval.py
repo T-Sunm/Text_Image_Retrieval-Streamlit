@@ -1,7 +1,7 @@
 import os
 import requests
 import io
-BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 
 def text_to_image(text):
@@ -9,7 +9,7 @@ def text_to_image(text):
   url = f"{BACKEND_URL}/multimodal/text_retrieval_img"
   params = {"query": text}
   headers = {'accept': 'application/json'}
-  response = requests.post(url, headers=headers, params=params, timeout=10)
+  response = requests.post(url, headers=headers, params=params, timeout=30)
 
   if response.status_code == 200:
     # Lấy JSON từ phản hồi

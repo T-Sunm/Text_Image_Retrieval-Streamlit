@@ -9,7 +9,7 @@ def extract_qa_basics(query: str, context: str):
   url = f"{BACKEND_URL}/eqa/question_answering"
   params = {"query": query, "context": context}
   headers = {'accept': 'application/json'}
-  response = requests.post(url, headers=headers, params=params, timeout=10)
+  response = requests.post(url, headers=headers, params=params, timeout=30)
 
   if response.status_code == 200:
     # Lấy JSON từ phản hồi

@@ -29,7 +29,7 @@ def text_to_text_advanced(text: str):
   url = f"{BACKEND_URL}/text/retrieval_advanced"
   params = {"query": text}
   headers = {'accept': 'application/json'}
-  response = requests.post(url, headers=headers, params=params, timeout=10)
+  response = requests.post(url, headers=headers, params=params, timeout=30)
 
   if response.status_code == 200:
     # Lấy JSON từ phản hồi

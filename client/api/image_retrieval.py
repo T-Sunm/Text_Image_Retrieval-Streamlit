@@ -1,7 +1,7 @@
 import os
 import requests
 import io
-BACKEND_URL = os.getenv("BACKEND_URL", "http://backend:8000")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 
 def image_to_image(image, image_name):
@@ -16,7 +16,7 @@ def image_to_image(image, image_name):
                            'application/octet-stream')}
   headers = {'accept': 'application/json'}
 
-  response = requests.post(url, headers=headers, files=files, timeout=10)
+  response = requests.post(url, headers=headers, files=files, timeout=30)
 
   if response.status_code == 200:
     # Lấy JSON từ phản hồi
